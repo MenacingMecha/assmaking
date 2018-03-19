@@ -80,4 +80,4 @@ def main():
     OpenData()
     GetPlayers()
     WriteCSV()
-    CloseData
+    CloseData()
