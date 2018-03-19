@@ -14,8 +14,6 @@ class Player:
     games = 0
 
 # Define player objects
-players = []
-playernames = set()
 def GetPlayers():
     # Get unique array of player names
     with open('Stats Log - Battlelog.csv') as csvfile:
@@ -32,7 +30,6 @@ def GetPlayers():
         x.name = i
         players.append(x)
         #print(x.name)
-GetPlayers()
 
 def match(challenger, defendant, winner):
     # Calculate the expected score for both players
@@ -67,4 +64,8 @@ def WriteCSV():
         elofile.flush()  # Write data to file
     elofile.close()
 
-WriteCSV()
+def main():
+    players = []
+    playernames = set()
+    GetPlayers()
+    WriteCSV()
