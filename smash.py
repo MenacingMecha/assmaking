@@ -1,9 +1,10 @@
 from elo import expected
 from elo import elo
-#import csv
+import csv
 
 # Define player class
 class Player:
+    name = ""
     ELO = 1200
     expected = 0
     result = 0
@@ -14,7 +15,9 @@ class Player:
 
 # Define player objects
 jodgers = Player()
+jodgers.name = "Jodgers"
 rory = Player()
+rory.name = "Rory"
 
 def match(challenger, defendant, winner):
     # Calculate the expected score for both players
@@ -58,3 +61,11 @@ with open('Stats Log - Battlelog.csv') as csvfile:
     for row in readCSV:
         print(row[0])
 '''
+
+with open("elo.csv", "wb") as elofile:
+    elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+    elowriter.writerow(["Player", "ELO"])
+    elowriter.writerow([jodgers.name, jodgers.ELO])
+    elowriter.writerow([rory.name, rory.ELO])
+    elofile.flush()  # Write data to file
+elofile.close()
