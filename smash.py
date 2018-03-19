@@ -14,15 +14,25 @@ class Player:
     games = 0
 
 # Define player objects
-jodgers = Player()
-jodgers.name = "Jodgers"
-rory = Player()
-rory.name = "Rory"
-
-# Add players to array
 players = []
-players.append(jodgers)
-players.append(rory)
+playernames = set()
+def GetPlayers():
+    # Get unique array of player names
+    with open('Stats Log - Battlelog.csv') as csvfile:
+        readCSV = csv.reader(csvfile, delimiter=',')
+        for row in readCSV:
+            name = row[2]
+            # TODO: This is innefecient to check every time
+            if name != "Challenger":
+                playernames.add(name)
+    #print(len(playernames))
+    # Populate player list
+    for i in playernames:
+        x = Player()
+        x.name = i
+        players.append(x)
+        #print(x.name)
+GetPlayers()
 
 def match(challenger, defendant, winner):
     # Calculate the expected score for both players
@@ -34,47 +44,27 @@ def match(challenger, defendant, winner):
         challenger.wins += 1
         defendant.result = 0
         defendant.losses += 1
-    else:
+    else:  # winner == defendant
         challenger.result = 0
         challenger.losses = 0
         defendant.result = 1
         defendant.losses += 1
+    # Increment number of games played
     challenger.games += 1
     defendant.games += 1
     # Set new ELO ratings
-    # TODO: Change to do this at the end of the week, rather than at the end of the match?
     challenger.ELO = elo(challenger.ELO, challenger.expected, challenger.result, k=challenger.k)
     defendant.ELO = elo(defendant.ELO, defendant.expected, defendant.result, k=defendant.k)
 
-# Example matches
-# TODO: Read this from csv match log
-match(jodgers, rory, jodgers)
-match(jodgers, rory, jodgers)
-match(jodgers, rory, rory)
-match(jodgers, rory, jodgers)
-match(jodgers, rory, rory)
-match(jodgers, rory, rory)
-match(jodgers, rory, jodgers)
+def WriteCSV():
+    with open("elo.csv", "wb") as elofile:
+        elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+        elowriter.writerow(["Player", "ELO"])  # Header row
+        for i in players:
+            elowriter.writerow([i.name, i.ELO])
+        #elowriter.writerow([jodgers.name, jodgers.ELO])
+        #elowriter.writerow([rory.name, rory.ELO])
+        elofile.flush()  # Write data to file
+    elofile.close()
 
-# Print example ELO ratings after a match
-'''
-print("jodgers' ELO: " + str(jodgers.ELO))
-print("rory's ELO: " + str(rory.ELO))
-'''
-
-'''
-with open('Stats Log - Battlelog.csv') as csvfile:
-    readCSV = csv.reader(csvfile, delimiter=',')
-    for row in readCSV:
-        print(row[0])
-'''
-
-with open("elo.csv", "wb") as elofile:
-    elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-    elowriter.writerow(["Player", "ELO"])  # Header row
-    for i in players:
-        elowriter.writerow([i.name, i.ELO])
-    #elowriter.writerow([jodgers.name, jodgers.ELO])
-    #elowriter.writerow([rory.name, rory.ELO])
-    elofile.flush()  # Write data to file
-elofile.close()
+WriteCSV()
