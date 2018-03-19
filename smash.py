@@ -13,16 +13,23 @@ class Player:
     losses = 0
     games = 0
 
+def OpenData():
+    csvfile = open('Stats Log - Battlelog.csv')
+    global readCSV  # TODO: change this to not make use of a global
+    readCSV = csv.reader(csvfile, delimiter=',')
+
 # Define player objects
 def GetPlayers():
     # Get unique array of player names
+    '''
     with open('Stats Log - Battlelog.csv') as csvfile:
         readCSV = csv.reader(csvfile, delimiter=',')
-        for row in readCSV:
-            name = row[2]
-            # TODO: This is innefecient to check every time
-            if name != "Challenger":
-                playernames.add(name)
+        '''
+    for row in readCSV:
+        name = row[2]
+        # TODO: This is innefecient to check every time
+        if name != "Challenger":
+            playernames.add(name)
     #print(len(playernames))
     # Populate player list
     for i in playernames:
@@ -64,8 +71,13 @@ def WriteCSV():
         elofile.flush()  # Write data to file
     elofile.close()
 
+def CloseData():
+    readCSV.close()
+
 def main():
-    players = []
+    players = []  # TODO: move these
     playernames = set()
+    OpenData()
     GetPlayers()
     WriteCSV()
+    CloseData
