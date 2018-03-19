@@ -19,6 +19,11 @@ jodgers.name = "Jodgers"
 rory = Player()
 rory.name = "Rory"
 
+# Add players to array
+players = []
+players.append(jodgers)
+players.append(rory)
+
 def match(challenger, defendant, winner):
     # Calculate the expected score for both players
     challenger.expected = expected(challenger.ELO, defendant.ELO)
@@ -52,8 +57,10 @@ match(jodgers, rory, rory)
 match(jodgers, rory, jodgers)
 
 # Print example ELO ratings after a match
+'''
 print("jodgers' ELO: " + str(jodgers.ELO))
 print("rory's ELO: " + str(rory.ELO))
+'''
 
 '''
 with open('Stats Log - Battlelog.csv') as csvfile:
@@ -64,8 +71,10 @@ with open('Stats Log - Battlelog.csv') as csvfile:
 
 with open("elo.csv", "wb") as elofile:
     elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-    elowriter.writerow(["Player", "ELO"])
-    elowriter.writerow([jodgers.name, jodgers.ELO])
-    elowriter.writerow([rory.name, rory.ELO])
+    elowriter.writerow(["Player", "ELO"])  # Header row
+    for i in players:
+        elowriter.writerow([i.name, i.ELO])
+    #elowriter.writerow([jodgers.name, jodgers.ELO])
+    #elowriter.writerow([rory.name, rory.ELO])
     elofile.flush()  # Write data to file
 elofile.close()
