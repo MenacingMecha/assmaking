@@ -1,10 +1,11 @@
 from elo import expected
 from elo import elo
 import csv
+import sys
 
 # Define player class
 class Player:
-    name = ""
+    name = ""  # Nickname assigned in
     ELO = 1200
     expected = 0
     result = 0
@@ -14,7 +15,7 @@ class Player:
 
 def OpenData():
     global csvfile
-    csvfile = open('Stats Log - Battlelog.csv')
+    csvfile = open(sys.argv[1])
     global readCSV  # TODO: change this to not make use of a global
     readCSV = csv.reader(csvfile, delimiter=',')
 
@@ -26,10 +27,6 @@ def ResetCSV():
 def GetPlayers():
     # Get unique array of player names
     playernames = set()
-    '''
-    with open('Stats Log - Battlelog.csv') as csvfile:
-        readCSV = csv.reader(csvfile, delimiter=',')
-        '''
     ResetCSV()
     # Loop through the challenger and defendant columns to populate player list
     for row in readCSV:
@@ -102,7 +99,7 @@ def CalculateELO():
         match(challenger, defendant, winner)
 
 def WriteCSV():
-    with open("elo.csv", "wb") as elofile:
+    with open(sys.argv[2], "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
         elowriter.writerow(["Player", "ELO"])  # Header row
         for i in players:
