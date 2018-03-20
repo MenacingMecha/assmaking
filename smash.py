@@ -14,22 +14,32 @@ class Player:
     games = 0
 
 def OpenData():
+    global csvfile
     csvfile = open('Stats Log - Battlelog.csv')
     global readCSV  # TODO: change this to not make use of a global
     readCSV = csv.reader(csvfile, delimiter=',')
 
+def ResetCSV():
+    csvfile.seek(0)
+    next(readCSV)
+
 # Define player objects
 def GetPlayers():
     # Get unique array of player names
+    playernames = set()
     '''
     with open('Stats Log - Battlelog.csv') as csvfile:
         readCSV = csv.reader(csvfile, delimiter=',')
         '''
+    ResetCSV()
+    # Loop through the challenger and defendant columns to populate player list
     for row in readCSV:
-        name = row[2]
-        # TODO: This is innefecient to check every time
-        if name != "Challenger":
-            playernames.add(name)
+        challenger = row[2]
+        playernames.add(challenger)
+    ResetCSV()
+    for row in readCSV:
+        defendant = row[3]
+        playernames.add(defendant)
     #print(len(playernames))
     # Populate player list
     for i in playernames:
@@ -60,6 +70,25 @@ def match(challenger, defendant, winner):
     challenger.ELO = elo(challenger.ELO, challenger.expected, challenger.result, k=challenger.k)
     defendant.ELO = elo(defendant.ELO, defendant.expected, defendant.result, k=defendant.k)
 
+def CalculateELO():
+    ResetCSV()
+    for row in readCSV:
+        challenger = row[2]
+        defendant = row[3]
+        winner = row[4]
+        #print([challenger, defendant, winner])
+        for i in players:
+            if i.name == challenger:
+                challenger = i
+            if i.name == defendant:
+                defendant = i
+            if i.name == winner:
+                winner = i
+        #print([isinstance(challenger, Player), isinstance(defendant, Player), isinstance(winner, Player)])
+        #print([challenger.name, defendant.name, winner.name])
+        #print([challenger.ELO, defendant.ELO, winner.ELO])
+        match(challenger, defendant, winner)
+
 def WriteCSV():
     with open("elo.csv", "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
@@ -72,12 +101,17 @@ def WriteCSV():
     elofile.close()
 
 def CloseData():
-    readCSV.close()
+    csvfile.close()
 
 def main():
+    global players
     players = []  # TODO: move these
-    playernames = set()
+    #playernames = set()
     OpenData()
     GetPlayers()
+    CalculateELO()
     WriteCSV()
     CloseData()
+
+if __name__ == "__main__":
+    main()
