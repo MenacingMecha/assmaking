@@ -59,5 +59,7 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-# Project specific
-elo.csv
+# ----------------
+# PROJECT SPECIFIC
+# ----------------
+*.csv
