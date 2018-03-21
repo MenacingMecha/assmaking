@@ -5,5 +5,5 @@ Python script for calculating ELO and other player stats from a csv detailing al
 ## Getting Started
 
 ```
-python input.csv output.csv
+python elo-calc.py input.csv output.csv
 ```
