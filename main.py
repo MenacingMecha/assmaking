@@ -76,8 +76,11 @@ def match(challenger, defendant, winner):
     challenger.games += 1
     defendant.games += 1
     # Set new ELO ratings
-    challenger.ELO = elo(challenger.ELO, challenger.expected, challenger.result, GetK(challenger))
-    defendant.ELO = elo(defendant.ELO, defendant.expected, defendant.result, GetK(defendant))
+    UpdateELO(challenger)
+    UpdateELO(defendant)
+
+def UpdateELO(player):
+    player.ELO = elo(player.ELO, player.expected, player.result, GetK(player))
 
 def GetStats():
     ResetCSV()
