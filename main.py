@@ -79,7 +79,7 @@ def match(challenger, defendant, winner):
     challenger.ELO = elo(challenger.ELO, challenger.expected, challenger.result, GetK(challenger))
     defendant.ELO = elo(defendant.ELO, defendant.expected, defendant.result, GetK(defendant))
 
-def CalculateELO():
+def GetStats():
     ResetCSV()
     for row in readCSV:
         challenger = row[2]
@@ -118,7 +118,7 @@ def main():
     #playernames = set()
     OpenData()
     GetPlayers()
-    CalculateELO()
+    GetStats()
     WriteCSV()
     CloseData()
 
