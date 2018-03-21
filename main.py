@@ -69,9 +69,9 @@ def match(challenger, defendant, winner):
         defendant.losses += 1
     else:  # winner == defendant
         challenger.result = 0
-        challenger.losses = 0
+        challenger.losses += 1
         defendant.result = 1
-        defendant.losses += 1
+        defendant.wins += 1
     # Increment number of games played
     challenger.games += 1
     defendant.games += 1
@@ -101,9 +101,9 @@ def CalculateELO():
 def WriteCSV():
     with open(sys.argv[2], "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-        elowriter.writerow(["Player", "ELO"])  # Header row
+        elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses"])  # Header row
         for i in players:
-            elowriter.writerow([i.name, i.ELO])
+            elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses])
         #elowriter.writerow([jodgers.name, jodgers.ELO])
         #elowriter.writerow([rory.name, rory.ELO])
         elofile.flush()  # Write data to file
