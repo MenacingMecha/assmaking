@@ -3,7 +3,6 @@ from elo import elo
 import csv
 import sys
 
-# Define player class
 class Player:
     name = ""  # Nickname assigned in
     ELO = 1200
@@ -14,17 +13,25 @@ class Player:
     games = 0
 
 def OpenData():
+    '''
+    Opens the CSV file detailing matches and their results
+    '''
     global csvfile
     csvfile = open(sys.argv[1])
     global readCSV  # TODO: change this to not make use of a global
     readCSV = csv.reader(csvfile, delimiter=',')
 
 def ResetCSV():
+    '''
+    Resets the file seek on the input CSV back to the start of data, skipping the header
+    '''
     csvfile.seek(0)
     next(readCSV)
 
-# Define player objects
 def GetPlayers():
+    '''
+    Populates the list of players from the input CSV
+    '''
     # Get unique array of player names
     playernames = set()
     ResetCSV()
@@ -45,6 +52,21 @@ def GetPlayers():
         #print(x.name)
 
 def GetK(player):
+    '''
+    Calculates the K value to be used for that player
+
+    Called in UpdateELO()
+
+    Parameters
+    ----------
+    player : object of player class
+        The player to get the correct K value for
+
+    Returns
+    -------
+    int
+        The K value to be used when calucating the new ELO value
+    '''
     newPlayerGames = 5
     newPlayerK = 40
     midPlayerK = 20
@@ -58,6 +80,16 @@ def GetK(player):
         return midPlayerK
 
 def match(challenger, defendant, winner):
+    '''
+    Updates the ELO value for the specified player
+
+    Called in GetStats()
+
+    Parameters
+    ----------
+    player : object of player class
+        The player to update the ELO value for
+    '''
     # Calculate the expected score for both players
     challenger.expected = expected(challenger.ELO, defendant.ELO)
     defendant.expected = expected(defendant.ELO, challenger.ELO)
@@ -80,9 +112,22 @@ def match(challenger, defendant, winner):
     UpdateELO(defendant)
 
 def UpdateELO(player):
+    '''
+    Updates the ELO value for the specified player
+
+    Called in match()
+
+    Parameters
+    ----------
+    player : object of player class
+        The player to update the ELO value for
+    '''
     player.ELO = elo(player.ELO, player.expected, player.result, GetK(player))
 
 def GetStats():
+    '''
+    Loops through each match that took place in the input CSV, running match() on each one to update the player's stats
+    '''
     ResetCSV()
     for row in readCSV:
         challenger = row[2]
@@ -102,6 +147,9 @@ def GetStats():
         match(challenger, defendant, winner)
 
 def WriteCSV():
+    '''
+    Loops through each player, writing their stats to the output CSV
+    '''
     with open(sys.argv[2], "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
         elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses"])  # Header row
@@ -113,6 +161,9 @@ def WriteCSV():
     elofile.close()
 
 def CloseData():
+    '''
+    Closes the opened input CSV
+    '''
     csvfile.close()
 
 def main():
