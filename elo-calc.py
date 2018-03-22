@@ -168,11 +168,16 @@ def GetStats(inputfile):
         #print([challenger.ELO, defendant.ELO, winner.ELO])
         match(challenger, defendant, winner)
 
-def WriteCSV():
+def WriteCSV(pathtofile):
     '''
     Loops through each player, writing their stats to the output CSV
+
+    Parameters
+    ----------
+    pathtofile : string
+        The path to the input file
     '''
-    with open(sys.argv[2], "wb") as elofile:
+    with open(pathtofile, "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
         elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses"])  # Header row
         for i in players:
@@ -180,14 +185,13 @@ def WriteCSV():
         elofile.flush()  # Write data to file
     elofile.close()
 
-
 def main():
     global players
     players = []  # TODO: move these
     matchlog = InputCSV(sys.argv[1])
     GetPlayers(matchlog)
     GetStats(matchlog)
-    WriteCSV()
+    WriteCSV(sys.argv[2])
     matchlog.CloseData()
 
 if __name__ == "__main__":
