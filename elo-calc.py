@@ -4,9 +4,7 @@ import csv
 import sys
 
 class Player:
-    '''
-    Stores the stat values for each player
-    '''
+    ''' Stores the stat values for each player '''
     def __init__(self):
         self.name = ""  # Nickname assigned in match log
         self.ELO = 1200
@@ -29,16 +27,12 @@ class InputCSV:
         self.read = csv.reader(self.inputFile, delimiter=',')
 
     def ResetCSV(self):
-        '''
-        Resets the file seek on the input CSV back to the start of data, skipping the header
-        '''
+        ''' Resets the file seek on the input CSV back to the start of data, skipping the header '''
         self.inputFile.seek(0)
         next(self.read)
 
     def CloseData(self):
-        '''
-        Closes the opened input CSV
-        '''
+        ''' Closes the opened input CSV '''
         self.inputFile.close()
 
 def GetPlayers(inputfile):
@@ -62,11 +56,9 @@ def GetPlayers(inputfile):
     for row in inputfile.read:
         challenger = row[2]
         playernames.add(challenger)
-    inputfile.ResetCSV()
-    for row in inputfile.read:  # TODO: why loop here twice?
         defendant = row[3]
         playernames.add(defendant)
-    # Check if a whitelist has been supplied, so we know if to check against it
+    # Check if we're using a whitelist for players
     try:
         whitelistFile = sys.argv[3]
     except IndexError:  # If there is no sys.argv[3], this will trigger
