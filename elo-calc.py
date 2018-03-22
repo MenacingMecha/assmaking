@@ -40,7 +40,7 @@ class InputCSV:
         '''
         self.inputFile.close()
 
-def GetPlayers(inputfile):
+def GetPlayers(inputfile, players):
     '''
     Populates the list of players from the input CSV
 
@@ -48,6 +48,9 @@ def GetPlayers(inputfile):
     ----------
     inputfile : object of the InputCSV class
         The match log to get list of players from
+
+    players : list
+        List of player objects of the Player class
     '''
     # Get unique array of player names
     playernames = set()
@@ -141,7 +144,7 @@ def UpdateELO(player):
     '''
     player.ELO = elo(player.ELO, player.expected, player.result, GetK(player))
 
-def GetStats(inputfile):
+def GetStats(inputfile, players):
     '''
     Loops through each match that took place in the input CSV, running match() on each one to update the player's stats
 
@@ -149,6 +152,9 @@ def GetStats(inputfile):
     ----------
     inputfile : object of the InputCSV class
         The match log to get list of players from
+
+    players : list
+        List of player objects of the Player class
     '''
     inputfile.ResetCSV()
     for row in inputfile.read:
@@ -168,7 +174,7 @@ def GetStats(inputfile):
         #print([challenger.ELO, defendant.ELO, winner.ELO])
         match(challenger, defendant, winner)
 
-def WriteCSV(pathtofile):
+def WriteCSV(pathtofile, players):
     '''
     Loops through each player, writing their stats to the output CSV
 
@@ -176,6 +182,9 @@ def WriteCSV(pathtofile):
     ----------
     pathtofile : string
         The path to the input file
+
+    players : list
+        List of player objects of the Player class
     '''
     with open(pathtofile, "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
@@ -185,12 +194,11 @@ def WriteCSV(pathtofile):
         elofile.flush()  # Write data to file
 
 def main():
-    global players
-    players = []  # TODO: move these
+    players = []
     matchlog = InputCSV(sys.argv[1])
-    GetPlayers(matchlog)
-    GetStats(matchlog)
-    WriteCSV(sys.argv[2])
+    GetPlayers(matchlog, players)
+    GetStats(matchlog, players)
+    WriteCSV(sys.argv[2], players)
     matchlog.CloseData()
 
 if __name__ == "__main__":

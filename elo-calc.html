@@ -80,18 +80,24 @@ Returns<br>
 -------<br>
 int<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;K&nbsp;value&nbsp;to&nbsp;be&nbsp;used&nbsp;when&nbsp;calucating&nbsp;the&nbsp;new&nbsp;ELO&nbsp;value</tt></dd></dl>
- <dl><dt><a name="-GetPlayers"><strong>GetPlayers</strong></a>(inputfile)</dt><dd><tt>Populates&nbsp;the&nbsp;list&nbsp;of&nbsp;players&nbsp;from&nbsp;the&nbsp;input&nbsp;CSV<br>
+ <dl><dt><a name="-GetPlayers"><strong>GetPlayers</strong></a>(inputfile, players)</dt><dd><tt>Populates&nbsp;the&nbsp;list&nbsp;of&nbsp;players&nbsp;from&nbsp;the&nbsp;input&nbsp;CSV<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
 inputfile&nbsp;:&nbsp;object&nbsp;of&nbsp;the&nbsp;<a href="#InputCSV">InputCSV</a>&nbsp;class<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;match&nbsp;log&nbsp;to&nbsp;get&nbsp;list&nbsp;of&nbsp;players&nbsp;from</tt></dd></dl>
- <dl><dt><a name="-GetStats"><strong>GetStats</strong></a>(inputfile)</dt><dd><tt>Loops&nbsp;through&nbsp;each&nbsp;match&nbsp;that&nbsp;took&nbsp;place&nbsp;in&nbsp;the&nbsp;input&nbsp;CSV,&nbsp;running&nbsp;<a href="#-match">match</a>()&nbsp;on&nbsp;each&nbsp;one&nbsp;to&nbsp;update&nbsp;the&nbsp;player's&nbsp;stats<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;match&nbsp;log&nbsp;to&nbsp;get&nbsp;list&nbsp;of&nbsp;players&nbsp;from<br>
+&nbsp;<br>
+players&nbsp;:&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;player&nbsp;objects&nbsp;of&nbsp;the&nbsp;<a href="#Player">Player</a>&nbsp;class</tt></dd></dl>
+ <dl><dt><a name="-GetStats"><strong>GetStats</strong></a>(inputfile, players)</dt><dd><tt>Loops&nbsp;through&nbsp;each&nbsp;match&nbsp;that&nbsp;took&nbsp;place&nbsp;in&nbsp;the&nbsp;input&nbsp;CSV,&nbsp;running&nbsp;<a href="#-match">match</a>()&nbsp;on&nbsp;each&nbsp;one&nbsp;to&nbsp;update&nbsp;the&nbsp;player's&nbsp;stats<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
 inputfile&nbsp;:&nbsp;object&nbsp;of&nbsp;the&nbsp;<a href="#InputCSV">InputCSV</a>&nbsp;class<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;match&nbsp;log&nbsp;to&nbsp;get&nbsp;list&nbsp;of&nbsp;players&nbsp;from</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;match&nbsp;log&nbsp;to&nbsp;get&nbsp;list&nbsp;of&nbsp;players&nbsp;from<br>
+&nbsp;<br>
+players&nbsp;:&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;player&nbsp;objects&nbsp;of&nbsp;the&nbsp;<a href="#Player">Player</a>&nbsp;class</tt></dd></dl>
  <dl><dt><a name="-UpdateELO"><strong>UpdateELO</strong></a>(player)</dt><dd><tt>Updates&nbsp;the&nbsp;ELO&nbsp;value&nbsp;for&nbsp;the&nbsp;specified&nbsp;player<br>
 &nbsp;<br>
 Called&nbsp;in&nbsp;<a href="#-match">match</a>()<br>
@@ -100,12 +106,15 @@ Parameters<br>
 ----------<br>
 player&nbsp;:&nbsp;object&nbsp;of&nbsp;player&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;player&nbsp;to&nbsp;update&nbsp;the&nbsp;ELO&nbsp;value&nbsp;for</tt></dd></dl>
- <dl><dt><a name="-WriteCSV"><strong>WriteCSV</strong></a>(pathtofile)</dt><dd><tt>Loops&nbsp;through&nbsp;each&nbsp;player,&nbsp;writing&nbsp;their&nbsp;stats&nbsp;to&nbsp;the&nbsp;output&nbsp;CSV<br>
+ <dl><dt><a name="-WriteCSV"><strong>WriteCSV</strong></a>(pathtofile, players)</dt><dd><tt>Loops&nbsp;through&nbsp;each&nbsp;player,&nbsp;writing&nbsp;their&nbsp;stats&nbsp;to&nbsp;the&nbsp;output&nbsp;CSV<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
 pathtofile&nbsp;:&nbsp;string<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;input&nbsp;file</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;input&nbsp;file<br>
+&nbsp;<br>
+players&nbsp;:&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;player&nbsp;objects&nbsp;of&nbsp;the&nbsp;<a href="#Player">Player</a>&nbsp;class</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt></dl>
  <dl><dt><a name="-match"><strong>match</strong></a>(challenger, defendant, winner)</dt><dd><tt>Updates&nbsp;the&nbsp;ELO&nbsp;value&nbsp;for&nbsp;the&nbsp;specified&nbsp;player<br>
 &nbsp;<br>
