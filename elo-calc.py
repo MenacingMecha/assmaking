@@ -40,7 +40,7 @@ class InputCSV:
         '''
         self.inputFile.close()
 
-def GetPlayers(inputfile, players):
+def GetPlayers(inputfile):
     '''
     Populates the list of players from the input CSV
 
@@ -49,8 +49,10 @@ def GetPlayers(inputfile, players):
     inputfile : object of the InputCSV class
         The match log to get list of players from
 
+    Returns
+    -------
     players : list
-        List of player objects of the Player class
+        List of objects of the Player() class
     '''
     # Get unique array of player names
     playernames = set()
@@ -65,11 +67,13 @@ def GetPlayers(inputfile, players):
         playernames.add(defendant)
     #print(len(playernames))
     # Populate player list
+    players = []
     for i in playernames:
         x = Player()
         x.name = i
         players.append(x)
         #print(x.name)
+    return players
 
 def GetK(player):
     '''
@@ -194,9 +198,8 @@ def WriteCSV(pathtofile, players):
         elofile.flush()  # Write data to file
 
 def main():
-    players = []
     matchlog = InputCSV(sys.argv[1])
-    GetPlayers(matchlog, players)
+    players = GetPlayers(matchlog)
     GetStats(matchlog, players)
     WriteCSV(sys.argv[2], players)
     matchlog.CloseData()

@@ -80,15 +80,17 @@ Returns<br>
 -------<br>
 int<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;K&nbsp;value&nbsp;to&nbsp;be&nbsp;used&nbsp;when&nbsp;calucating&nbsp;the&nbsp;new&nbsp;ELO&nbsp;value</tt></dd></dl>
- <dl><dt><a name="-GetPlayers"><strong>GetPlayers</strong></a>(inputfile, players)</dt><dd><tt>Populates&nbsp;the&nbsp;list&nbsp;of&nbsp;players&nbsp;from&nbsp;the&nbsp;input&nbsp;CSV<br>
+ <dl><dt><a name="-GetPlayers"><strong>GetPlayers</strong></a>(inputfile)</dt><dd><tt>Populates&nbsp;the&nbsp;list&nbsp;of&nbsp;players&nbsp;from&nbsp;the&nbsp;input&nbsp;CSV<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
 inputfile&nbsp;:&nbsp;object&nbsp;of&nbsp;the&nbsp;<a href="#InputCSV">InputCSV</a>&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;match&nbsp;log&nbsp;to&nbsp;get&nbsp;list&nbsp;of&nbsp;players&nbsp;from<br>
 &nbsp;<br>
+Returns<br>
+-------<br>
 players&nbsp;:&nbsp;list<br>
-&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;player&nbsp;objects&nbsp;of&nbsp;the&nbsp;<a href="#Player">Player</a>&nbsp;class</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;objects&nbsp;of&nbsp;the&nbsp;<a href="#Player">Player</a>()&nbsp;class</tt></dd></dl>
  <dl><dt><a name="-GetStats"><strong>GetStats</strong></a>(inputfile, players)</dt><dd><tt>Loops&nbsp;through&nbsp;each&nbsp;match&nbsp;that&nbsp;took&nbsp;place&nbsp;in&nbsp;the&nbsp;input&nbsp;CSV,&nbsp;running&nbsp;<a href="#-match">match</a>()&nbsp;on&nbsp;each&nbsp;one&nbsp;to&nbsp;update&nbsp;the&nbsp;player's&nbsp;stats<br>
 &nbsp;<br>
 Parameters<br>
