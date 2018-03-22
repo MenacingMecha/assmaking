@@ -183,7 +183,6 @@ def WriteCSV(pathtofile):
         for i in players:
             elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses])
         elofile.flush()  # Write data to file
-    elofile.close()
 
 def main():
     global players
