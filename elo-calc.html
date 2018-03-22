@@ -67,7 +67,18 @@ pathtofile&nbsp;:&nbsp;string<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-GetK"><strong>GetK</strong></a>(player)</dt><dd><tt>Calculates&nbsp;the&nbsp;K&nbsp;value&nbsp;to&nbsp;be&nbsp;used&nbsp;for&nbsp;that&nbsp;player<br>
+<td width="100%"><dl><dt><a name="-CheckWhitelist"><strong>CheckWhitelist</strong></a>(name, whitelist)</dt><dd><tt>Returns&nbsp;whether&nbsp;or&nbsp;not&nbsp;a&nbsp;player&nbsp;is&nbsp;on&nbsp;the&nbsp;whitelist<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;player&nbsp;name&nbsp;to&nbsp;check&nbsp;against&nbsp;whitelist&nbsp;entries<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+onWhitelist&nbsp;:&nbsp;boolean<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Whether&nbsp;or&nbsp;not&nbsp;the&nbsp;name&nbsp;was&nbsp;on&nbsp;the&nbsp;supplied&nbsp;whitelist</tt></dd></dl>
+ <dl><dt><a name="-GetK"><strong>GetK</strong></a>(player)</dt><dd><tt>Calculates&nbsp;the&nbsp;K&nbsp;value&nbsp;to&nbsp;be&nbsp;used&nbsp;for&nbsp;that&nbsp;player<br>
 &nbsp;<br>
 Called&nbsp;in&nbsp;<a href="#-UpdateELO">UpdateELO</a>()<br>
 &nbsp;<br>
@@ -100,6 +111,17 @@ inputfile&nbsp;:&nbsp;object&nbsp;of&nbsp;the&nbsp;<a href="#InputCSV">InputCSV<
 &nbsp;<br>
 players&nbsp;:&nbsp;list<br>
 &nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;player&nbsp;objects&nbsp;of&nbsp;the&nbsp;<a href="#Player">Player</a>&nbsp;class</tt></dd></dl>
+ <dl><dt><a name="-GetWhitelist"><strong>GetWhitelist</strong></a>(pathtofile)</dt><dd><tt>Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;players&nbsp;from&nbsp;the&nbsp;supplied&nbsp;whitelist&nbsp;file<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+pathtofile&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;input&nbsp;file<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+whitelist&nbsp;:&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Whitelist&nbsp;array&nbsp;to&nbsp;check&nbsp;against&nbsp;in&nbsp;<a href="#-match">match</a>()</tt></dd></dl>
  <dl><dt><a name="-UpdateELO"><strong>UpdateELO</strong></a>(player)</dt><dd><tt>Updates&nbsp;the&nbsp;ELO&nbsp;value&nbsp;for&nbsp;the&nbsp;specified&nbsp;player<br>
 &nbsp;<br>
 Called&nbsp;in&nbsp;<a href="#-match">match</a>()<br>

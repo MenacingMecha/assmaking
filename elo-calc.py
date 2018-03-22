@@ -15,6 +15,7 @@ class Player:
         self.wins = 0
         self.losses = 0
         self.games = 0
+        self.onWhitelist = None
 
 class InputCSV:
     def __init__(self, pathtofile):
@@ -65,15 +66,70 @@ def GetPlayers(inputfile):
     for row in inputfile.read:  # TODO: why loop here twice?
         defendant = row[3]
         playernames.add(defendant)
-    #print(len(playernames))
+    # Check if a whitelist has been supplied, so we know if to check against it
+    try:
+        whitelistFile = sys.argv[3]
+    except IndexError:  # If there is no sys.argv[3], this will trigger
+        whitelistFile = None
+    if whitelistFile != None:
+        whitelistSupplied = True
+        whitelist = GetWhitelist(whitelistFile)
+    else:
+        whitelistSupplied = False
     # Populate player list
     players = []
     for i in playernames:
         x = Player()
         x.name = i
+        if whitelistSupplied:
+            x.onWhitelist = CheckWhitelist(x.name, whitelist)
+        else:  # If not using a whitelist, default to True
+            x.onWhitelist = True
         players.append(x)
-        #print(x.name)
+    #for i in players:
+    #    print(i.name, i.onWhitelist)
     return players
+
+def GetWhitelist(pathtofile):
+    '''
+    Returns an array of players from the supplied whitelist file
+
+    Parameters
+    ----------
+    pathtofile : string
+        The path to the input file
+
+    Returns
+    -------
+    whitelist : list
+        Whitelist array to check against in match()
+    '''
+    whitelist = []
+    with open(pathtofile, "r") as whitelistFile:
+        for line in whitelistFile:
+            name = line.rstrip()
+            whitelist.append(name)
+    return whitelist
+
+def CheckWhitelist(name, whitelist):
+    '''
+    Returns whether or not a player is on the whitelist
+
+    Parameters
+    ----------
+    name : string
+        The player name to check against whitelist entries
+
+    Returns
+    -------
+    onWhitelist : boolean
+        Whether or not the name was on the supplied whitelist
+    '''
+    for i in whitelist:
+        if name == i:
+            return True
+    else:
+        return False
 
 def GetK(player):
     '''
@@ -176,7 +232,8 @@ def GetStats(inputfile, players):
         #print([isinstance(challenger, Player), isinstance(defendant, Player), isinstance(winner, Player)])
         #print([challenger.name, defendant.name, winner.name])
         #print([challenger.ELO, defendant.ELO, winner.ELO])
-        match(challenger, defendant, winner)
+        if challenger.onWhitelist and defendant.onWhitelist:
+            match(challenger, defendant, winner)
 
 def WriteCSV(pathtofile, players):
     '''
@@ -194,7 +251,8 @@ def WriteCSV(pathtofile, players):
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
         elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses"])  # Header row
         for i in players:
-            elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses])
+            if i.onWhitelist:  # Only add to output if on the whitelist
+                elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses])
         elofile.flush()  # Write data to file
 
 def main():
