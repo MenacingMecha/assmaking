@@ -4,43 +4,60 @@ import csv
 import sys
 
 class Player:
-    name = ""  # Nickname assigned in
-    ELO = 1200
-    expected = 0
-    result = 0
-    wins = 0
-    losses = 0
-    games = 0
+    '''
+    Stores the stat values for each player
+    '''
+    def __init__(self):
+        self.name = ""  # Nickname assigned in match log
+        self.ELO = 1200
+        self.expected = None
+        self.result = None
+        self.wins = 0
+        self.losses = 0
+        self.games = 0
 
-def OpenData():
-    '''
-    Opens the CSV file detailing matches and their results
-    '''
-    global csvfile
-    csvfile = open(sys.argv[1])
-    global readCSV  # TODO: change this to not make use of a global
-    readCSV = csv.reader(csvfile, delimiter=',')
+class InputCSV:
+    def __init__(self, pathtofile):
+        '''
+        Parameters
+        ----------
+        pathtofile : string
+            The path to the input file
+        '''
+        self.inputFile = open(pathtofile)
+        self.read = csv.reader(self.inputFile, delimiter=',')
 
-def ResetCSV():
-    '''
-    Resets the file seek on the input CSV back to the start of data, skipping the header
-    '''
-    csvfile.seek(0)
-    next(readCSV)
+    def ResetCSV(self):
+        '''
+        Resets the file seek on the input CSV back to the start of data, skipping the header
+        '''
+        self.inputFile.seek(0)
+        next(self.read)
 
-def GetPlayers():
+    def CloseData(self):
+        '''
+        Closes the opened input CSV
+        '''
+        self.inputFile.close()
+
+def GetPlayers(inputfile):
     '''
     Populates the list of players from the input CSV
+
+    Parameters
+    ----------
+    inputfile : object of the InputCSV class
+        The match log to get list of players from
     '''
     # Get unique array of player names
     playernames = set()
-    ResetCSV()
+    inputfile.ResetCSV()
     # Loop through the challenger and defendant columns to populate player list
-    for row in readCSV:
+    for row in inputfile.read:
         challenger = row[2]
         playernames.add(challenger)
-    ResetCSV()
-    for row in readCSV:
+    inputfile.ResetCSV()
+    for row in inputfile.read:  # TODO: why loop here twice?
         defendant = row[3]
         playernames.add(defendant)
     #print(len(playernames))
@@ -124,12 +141,17 @@ def UpdateELO(player):
     '''
     player.ELO = elo(player.ELO, player.expected, player.result, GetK(player))
 
-def GetStats():
+def GetStats(inputfile):
     '''
     Loops through each match that took place in the input CSV, running match() on each one to update the player's stats
+
+    Parameters
+    ----------
+    inputfile : object of the InputCSV class
+        The match log to get list of players from
     '''
-    ResetCSV()
-    for row in readCSV:
+    inputfile.ResetCSV()
+    for row in inputfile.read:
         challenger = row[2]
         defendant = row[3]
         winner = row[4]
@@ -155,26 +177,18 @@ def WriteCSV():
         elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses"])  # Header row
         for i in players:
             elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses])
-        #elowriter.writerow([jodgers.name, jodgers.ELO])
-        #elowriter.writerow([rory.name, rory.ELO])
         elofile.flush()  # Write data to file
     elofile.close()
 
-def CloseData():
-    '''
-    Closes the opened input CSV
-    '''
-    csvfile.close()
 
 def main():
     global players
     players = []  # TODO: move these
-    #playernames = set()
-    OpenData()
-    GetPlayers()
-    GetStats()
+    matchlog = InputCSV(sys.argv[1])
+    GetPlayers(matchlog)
+    GetStats(matchlog)
     WriteCSV()
-    CloseData()
+    matchlog.CloseData()
 
 if __name__ == "__main__":
     main()
