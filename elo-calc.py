@@ -8,6 +8,7 @@ class Player:
     def __init__(self):
         self.name = ""  # Nickname assigned in match log
         self.ELO = 1200
+        self.ELOHighest = self.ELO
         self.expected = None
         self.result = None
         self.wins = 0
@@ -195,6 +196,8 @@ def UpdateELO(player):
         The player to update the ELO value for
     '''
     player.ELO = elo(player.ELO, player.expected, player.result, GetK(player))
+    if player.ELO > player.ELOHighest:
+        player.ELOHighest = player.ELO
 
 def GetStats(inputfile, players):
     '''
@@ -241,14 +244,14 @@ def WriteCSV(pathtofile, players):
     '''
     with open(pathtofile, "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-        elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses"])  # Header row
+        elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses", "Highest ELO"])  # Header row
         minGames = 5
         for i in players:
             if i.onWhitelist:  # Only add to output if on the whitelist
                 # Fudge ELO value for players with very few games
                 if i.games <= minGames:
                     i.ELO = i.games
-                elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses])
+                elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses, i.ELOHighest])
         elofile.flush()  # Write data to file
 
 def main():
