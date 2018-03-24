@@ -244,14 +244,14 @@ def WriteCSV(pathtofile, players):
     '''
     with open(pathtofile, "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-        elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses", "Highest ELO"])  # Header row
+        elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses", "Winrate", "Highest ELO"])  # Header row
         minGames = 5
         for i in players:
             if i.onWhitelist:  # Only add to output if on the whitelist
                 # Fudge ELO value for players with very few games
                 if i.games <= minGames:
                     i.ELO = i.games
-                elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses, i.ELOHighest])
+                elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses, float(i.wins)/float(i.games), i.ELOHighest])
         elofile.flush()  # Write data to file
 
 def main():
