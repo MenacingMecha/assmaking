@@ -251,6 +251,7 @@ def WriteCSV(pathtofile, players):
                 # Fudge ELO value for players with very few games
                 if i.games <= minGames:
                     i.ELO = i.games
+                    i.ELOHighest = i.games
                 elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses, float(i.wins)/float(i.games), i.ELOHighest])
         elofile.flush()  # Write data to file
 
