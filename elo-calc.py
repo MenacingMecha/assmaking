@@ -244,15 +244,31 @@ def WriteCSV(pathtofile, players):
     '''
     with open(pathtofile, "wb") as elofile:
         elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-        elowriter.writerow(["Player", "ELO", "Games", "Wins", "Losses", "Winrate", "Highest ELO"])  # Header row
-        minGames = 5
+        headerRow = []  # Move headerRow section to own method?
+        headerRow.append("Player")
+        headerRow.append("Elo")
+        headerRow.append("Games")
+        headerRow.append("Wins")
+        headerRow.append("Losses")
+        headerRow.append("Winrate")
+        headerRow.append("Highest Elo")
+        elowriter.writerow(headerRow)
+        placementGames = 5
         for i in players:
             if i.onWhitelist:  # Only add to output if on the whitelist
                 # Fudge ELO value for players with very few games
-                if i.games <= minGames:
+                if i.games <= placementGames:
                     i.ELO = i.games
                     i.ELOHighest = i.games
-                elowriter.writerow([i.name, i.ELO, i.games, i.wins, i.losses, float(i.wins)/float(i.games), i.ELOHighest])
+                dataRow = []  # Move this to it's own section?
+                dataRow.append(i.name)
+                dataRow.append(i.ELO)
+                dataRow.append(i.games)
+                dataRow.append(i.wins)
+                dataRow.append(i.losses)
+                dataRow.append(float(i.wins)/float(i.games))  # winrate
+                dataRow.append(i.ELOHighest)
+                elowriter.writerow(dataRow)
         elofile.flush()  # Write data to file
 
 def main():
