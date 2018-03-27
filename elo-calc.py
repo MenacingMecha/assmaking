@@ -9,6 +9,7 @@ class Player:
         self.name = ""  # Nickname assigned in match log
         self.ELO = 1200
         self.ELOHighest = self.ELO
+        self.ELOLowest = self.ELO
         self.expected = None
         self.result = None
         self.wins = 0
@@ -198,6 +199,8 @@ def UpdateELO(player):
     player.ELO = elo(player.ELO, player.expected, player.result, GetK(player))
     if player.ELO > player.ELOHighest:
         player.ELOHighest = player.ELO
+    elif player.ELO < player.ELOLowest:
+        player.ELOLowest = player.ELO
 
 def GetStats(inputfile, players):
     '''
@@ -252,6 +255,7 @@ def WriteCSV(pathtofile, players):
         headerRow.append("Losses")
         headerRow.append("Winrate")
         headerRow.append("Highest Elo")
+        headerRow.append("Lowest Elo")
         elowriter.writerow(headerRow)
         placementGames = 5
         for i in players:
@@ -260,6 +264,7 @@ def WriteCSV(pathtofile, players):
                 if i.games <= placementGames:
                     i.ELO = i.games
                     i.ELOHighest = i.games
+                    i.ELOLowest = i.games
                 dataRow = []  # Move this to it's own section?
                 dataRow.append(i.name)
                 dataRow.append(i.ELO)
@@ -268,6 +273,7 @@ def WriteCSV(pathtofile, players):
                 dataRow.append(i.losses)
                 dataRow.append(float(i.wins)/float(i.games))  # winrate
                 dataRow.append(i.ELOHighest)
+                dataRow.append(i.ELOLowest)
                 elowriter.writerow(dataRow)
         elofile.flush()  # Write data to file
 
