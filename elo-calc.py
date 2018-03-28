@@ -2,6 +2,7 @@ from elo import expected
 from elo import elo
 import csv
 import sys
+import argparse
 
 class Player:
     ''' Stores the stat values for each player '''
@@ -37,7 +38,25 @@ class InputCSV:
         ''' Closes the opened input CSV '''
         self.inputFile.close()
 
-def GetPlayers(inputfile):
+class ArgParse:
+    '''Handles command line arguments'''
+    def __init__(self):
+        self.parser = argparse.ArgumentParser(version='2.0-alpha')
+        self.results = None
+
+    def parse(self):
+        '''Parses arguments, storing the appropriate values'''
+        self.parser.add_argument('input_file', action='store',
+                help='Input CSV containing details of matches')
+        self.parser.add_argument('-s', '--silent', action='store_true', default=False,
+                help='Silences terminal output')
+        self.parser.add_argument('-o', action='store', dest='output_file',
+                help='Output CSV to write stats to')
+        self.parser.add_argument('-w', action='store', dest='whitelist_file',
+                help='Newline-seperated list of players to check optionally check against')
+        self.results = self.parser.parse_args()
+
+def GetPlayers(inputfile, whitelistfile):
     '''
     Populates the list of players from the input CSV
 
@@ -61,13 +80,9 @@ def GetPlayers(inputfile):
         defendant = row[3]
         playernames.add(defendant)
     # Check if we're using a whitelist for players
-    try:
-        whitelistFile = sys.argv[3]
-    except IndexError:  # If there is no sys.argv[3], this will trigger
-        whitelistFile = None
-    if whitelistFile != None:
+    if whitelistfile != None:
         whitelistSupplied = True
-        whitelist = GetWhitelist(whitelistFile)
+        whitelist = GetWhitelist(whitelistfile)
     else:
         whitelistSupplied = False
     # Populate player list
@@ -277,11 +292,14 @@ def WriteCSV(pathtofile, players):
                 elowriter.writerow(dataRow)
         elofile.flush()  # Write data to file
 
+
 def main():
-    matchlog = InputCSV(sys.argv[1])
-    players = GetPlayers(matchlog)
+    arg = ArgParse()
+    arg.parse()
+    matchlog = InputCSV(arg.results.input_file)
+    players = GetPlayers(matchlog, arg.results.whitelist_file)
     GetStats(matchlog, players)
-    WriteCSV(sys.argv[2], players)
+    WriteCSV(arg.results.output_file, players)
     matchlog.CloseData()
 
 if __name__ == "__main__":
