@@ -49,11 +49,14 @@ class ArgParse:
         self.parser.add_argument('input_file', action='store',
                 help='Input CSV containing details of matches')
         self.parser.add_argument('-s', '--silent', action='store_true', default=False,
-                dest="silent", help='Silences terminal output (output is ugly!)')
+                dest="silent", help='Silences terminal output')
         self.parser.add_argument('-o', action='store', dest='output_file',
                 help='Output CSV to write stats to')
         self.parser.add_argument('-w', action='store', dest='whitelist_file',
                 help='Newline-seperated list of players to check optionally check against')
+        self.parser.add_argument('--print-output', action='store_true', default=False,
+                dest='print_output',
+                help='Print stats to terminal (output is ugly, use for debugging!)')
         self.results = self.parser.parse_args()
 
 def GetPlayers(inputfile, whitelistfile):
@@ -270,7 +273,7 @@ def WriteCSV(pathtofile, stats):
                 elowriter.writerow(i)
         elofile.flush()  # Write data to file
 
-def OutputStats(players, outputfile, silentoutput):
+def OutputStats(players, outputfile, silentoutput, printoutput):
     '''
     Loops through each player, writing their stats to the output CSV
 
@@ -284,6 +287,9 @@ def OutputStats(players, outputfile, silentoutput):
 
     silentoutput : boolean
         Whether or not to print the output to the terminal
+
+    printoutput : boolean
+        Whether or not to print stats to the terminal
     '''
     headerRow = []  # Move headerRow section to own method?
     headerRow.append("Player")
@@ -314,12 +320,13 @@ def OutputStats(players, outputfile, silentoutput):
             dataRow.append(i.ELOHighest)
             dataRow.append(i.ELOLowest)
             stats.append(dataRow)
-    if silentoutput == False:
+    if printoutput and silentoutput == False:
         for i in stats:
             print(i)
     if outputfile != None:
         WriteCSV(outputfile, stats)
-        print("Output stats to " + outputfile)
+        if silentoutput == False:
+            print("Output stats to " + outputfile)
 
 def main():
     arg = ArgParse()
@@ -327,7 +334,8 @@ def main():
     matchlog = InputCSV(arg.results.input_file)
     players = GetPlayers(matchlog, arg.results.whitelist_file)
     GetStats(matchlog, players)
-    OutputStats(players, arg.results.output_file, arg.results.silent)
+    OutputStats(players, arg.results.output_file, arg.results.silent,
+            arg.results.print_output)
     matchlog.CloseData()
 
 if __name__ == "__main__":
