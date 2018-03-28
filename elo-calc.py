@@ -49,7 +49,7 @@ class ArgParse:
         self.parser.add_argument('input_file', action='store',
                 help='Input CSV containing details of matches')
         self.parser.add_argument('-s', '--silent', action='store_true', default=False,
-                help='Silences terminal output')
+                dest="silent", help='Silences terminal output (output is ugly!)')
         self.parser.add_argument('-o', action='store', dest='output_file',
                 help='Output CSV to write stats to')
         self.parser.add_argument('-w', action='store', dest='whitelist_file',
@@ -64,6 +64,9 @@ def GetPlayers(inputfile, whitelistfile):
     ----------
     inputfile : object of the InputCSV class
         The match log to get list of players from
+
+    whitelistfile : string
+        Path to whitelist file to check players against
 
     Returns
     -------
@@ -248,50 +251,74 @@ def GetStats(inputfile, players):
         if challenger.onWhitelist and defendant.onWhitelist:
             match(challenger, defendant, winner)
 
-def WriteCSV(pathtofile, players):
+def WriteCSV(pathtofile, stats):
     '''
-    Loops through each player, writing their stats to the output CSV
+    Loops through stats list, writing each row to the output csv
 
     Parameters
     ----------
     pathtofile : string
         The path to the input file
 
-    players : list
-        List of player objects of the Player class
+    stats : list
+        List of stats ready to be exported
     '''
     with open(pathtofile, "wb") as elofile:
-        elowriter = csv.writer(elofile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-        headerRow = []  # Move headerRow section to own method?
-        headerRow.append("Player")
-        headerRow.append("Elo")
-        headerRow.append("Games")
-        headerRow.append("Wins")
-        headerRow.append("Losses")
-        headerRow.append("Winrate")
-        headerRow.append("Highest Elo")
-        headerRow.append("Lowest Elo")
-        elowriter.writerow(headerRow)
-        placementGames = 5
-        for i in players:
-            if i.onWhitelist:  # Only add to output if on the whitelist
-                # Fudge ELO value for players with very few games
-                if i.games <= placementGames:
-                    i.ELO = i.games
-                    i.ELOHighest = i.games
-                    i.ELOLowest = i.games
-                dataRow = []  # Move this to it's own section?
-                dataRow.append(i.name)
-                dataRow.append(i.ELO)
-                dataRow.append(i.games)
-                dataRow.append(i.wins)
-                dataRow.append(i.losses)
-                dataRow.append(float(i.wins)/float(i.games))  # winrate
-                dataRow.append(i.ELOHighest)
-                dataRow.append(i.ELOLowest)
-                elowriter.writerow(dataRow)
+        elowriter = csv.writer(elofile, delimiter=',', quotechar="'",
+                quoting=csv.QUOTE_MINIMAL)
+        for i in stats:
+                elowriter.writerow(i)
         elofile.flush()  # Write data to file
 
+def OutputStats(players, outputfile, silentoutput):
+    '''
+    Loops through each player, writing their stats to the output CSV
+
+    Parameters
+    ----------
+    players : list
+        List of player objects of the Player class
+
+    outputfile : string
+        The path to the input file
+
+    silentoutput : boolean
+        Whether or not to print the output to the terminal
+    '''
+    headerRow = []  # Move headerRow section to own method?
+    headerRow.append("Player")
+    headerRow.append("Elo")
+    headerRow.append("Games")
+    headerRow.append("Wins")
+    headerRow.append("Losses")
+    headerRow.append("Winrate")
+    headerRow.append("Highest Elo")
+    headerRow.append("Lowest Elo")
+    stats = []
+    stats.append(headerRow)
+    placementGames = 5
+    for i in players:
+        if i.onWhitelist:  # Only add to output if on the whitelist
+            # Fudge ELO value for players with very few games
+            if i.games <= placementGames:
+                i.ELO = i.games
+                i.ELOHighest = i.games
+                i.ELOLowest = i.games
+            dataRow = []  # Move this to it's own section?
+            dataRow.append(i.name)
+            dataRow.append(i.ELO)
+            dataRow.append(i.games)
+            dataRow.append(i.wins)
+            dataRow.append(i.losses)
+            dataRow.append(float(i.wins)/float(i.games))  # winrate
+            dataRow.append(i.ELOHighest)
+            dataRow.append(i.ELOLowest)
+            stats.append(dataRow)
+    if silentoutput == False:
+        for i in stats:
+            print(i)
+    if outputfile != None:
+        WriteCSV(outputfile, stats)
 
 def main():
     arg = ArgParse()
@@ -299,7 +326,7 @@ def main():
     matchlog = InputCSV(arg.results.input_file)
     players = GetPlayers(matchlog, arg.results.whitelist_file)
     GetStats(matchlog, players)
-    WriteCSV(arg.results.output_file, players)
+    OutputStats(players, arg.results.output_file, arg.results.silent)
     matchlog.CloseData()
 
 if __name__ == "__main__":
