@@ -319,6 +319,7 @@ def OutputStats(players, outputfile, silentoutput):
             print(i)
     if outputfile != None:
         WriteCSV(outputfile, stats)
+        print("Output stats to " + outputfile)
 
 def main():
     arg = ArgParse()
