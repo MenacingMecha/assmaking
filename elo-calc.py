@@ -57,9 +57,11 @@ class ArgParse:
         self.parser.add_argument('--print-output', action='store_true', default=False,
                 dest='print_output',
                 help='Print stats to terminal (output is ugly, use for debugging!)')
+        self.parser.add_argument('-x', action='store', dest='offset', type=int,
+                default=0, help='How many columns to offset in the input CSV')
         self.results = self.parser.parse_args()
 
-def GetPlayers(inputfile, whitelistfile):
+def GetPlayers(inputfile, whitelistfile, column_offset):
     '''
     Populates the list of players from the input CSV
 
@@ -71,6 +73,9 @@ def GetPlayers(inputfile, whitelistfile):
     whitelistfile : string
         Path to whitelist file to check players against
 
+    column_offset : int
+        How many columns to offset in the input CSV
+
     Returns
     -------
     players : list
@@ -81,9 +86,9 @@ def GetPlayers(inputfile, whitelistfile):
     inputfile.ResetCSV()
     # Loop through the challenger and defendant columns to populate player list
     for row in inputfile.read:
-        challenger = row[2]
+        challenger = row[0 + column_offset]
+        defendant = row[1 + column_offset]
         playernames.add(challenger)
-        defendant = row[3]
         playernames.add(defendant)
     # Check if we're using a whitelist for players
     if whitelistfile != None:
@@ -223,7 +228,7 @@ def UpdateELO(player):
     elif player.ELO < player.ELOLowest:
         player.ELOLowest = player.ELO
 
-def GetStats(inputfile, players):
+def GetStats(inputfile, players, column_offset):
     '''
     Loops through each match that took place in the input CSV, running match() on each one to update the player's stats
 
@@ -234,12 +239,15 @@ def GetStats(inputfile, players):
 
     players : list
         List of player objects of the Player class
+
+    column_offset : int
+        How many columns to offset in the input CSV
     '''
     inputfile.ResetCSV()
     for row in inputfile.read:
-        challenger = row[2]
-        defendant = row[3]
-        winner = row[4]
+        challenger = row[0 + column_offset]
+        defendant = row[1 + column_offset]
+        winner = row[2 + column_offset]
         #print([challenger, defendant, winner])
         for i in players:
             if i.name == challenger:
@@ -332,8 +340,8 @@ def main():
     arg = ArgParse()
     arg.parse()
     matchlog = InputCSV(arg.results.input_file)
-    players = GetPlayers(matchlog, arg.results.whitelist_file)
-    GetStats(matchlog, players)
+    players = GetPlayers(matchlog, arg.results.whitelist_file, arg.results.offset)
+    GetStats(matchlog, players, arg.results.offset)
     OutputStats(players, arg.results.output_file, arg.results.silent,
             arg.results.print_output)
     matchlog.CloseData()
