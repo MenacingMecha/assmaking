@@ -41,7 +41,7 @@ class InputCSV:
 class ArgParse:
     '''Handles command line arguments'''
     def __init__(self):
-        self.parser = argparse.ArgumentParser(version='2.0')
+        self.parser = argparse.ArgumentParser(version='2.1')
         self.results = None
 
     def parse(self):
