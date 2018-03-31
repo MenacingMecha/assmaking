@@ -94,6 +94,9 @@ class ArgParse:
                 help='Print stats to terminal (output is ugly, use for debugging!)')
         self.parser.add_argument('-x', action='store', dest='offset', type=int,
                 default=0, help='How many columns to offset in the input CSV')
+        self.parser.add_argument('--placement-games', action='store',
+                dest='placement_games', type=int, default=5,
+                help='How many games need to be played with fudged values outputted')
         self.results = self.parser.parse_args()
 
 def GetPlayers(inputfile, whitelistfile, column_offset):
@@ -271,7 +274,7 @@ def WriteCSV(pathtofile, stats):
                 elowriter.writerow(i)
         elofile.flush()  # Write data to file
 
-def OutputStats(players, outputfile, silentoutput, printoutput):
+def OutputStats(players, outputfile, silentoutput, printoutput, placement_games):
     '''
     Loops through each player, writing their stats to the output CSV
 
@@ -288,6 +291,9 @@ def OutputStats(players, outputfile, silentoutput, printoutput):
 
     printoutput : boolean
         Whether or not to print stats to the terminal
+
+    placement_games : int
+        How many games need to be played with fudged values outputted
     '''
     headerRow = []  # Move headerRow section to own method?
     headerRow.append("Player")
@@ -300,11 +306,10 @@ def OutputStats(players, outputfile, silentoutput, printoutput):
     headerRow.append("Lowest Elo")
     stats = []
     stats.append(headerRow)
-    placementGames = 5
     for i in players:
         if i.onWhitelist:  # Only add to output if on the whitelist
             # Fudge ELO value for players with very few games
-            if i.games <= placementGames:
+            if i.games <= placement_games:
                 i.ELO = i.games
                 i.ELOHighest = i.games
                 i.ELOLowest = i.games
@@ -333,7 +338,7 @@ def main():
     players = GetPlayers(matchlog, arg.results.whitelist_file, arg.results.offset)
     GetStats(matchlog, players, arg.results.offset)
     OutputStats(players, arg.results.output_file, arg.results.silent,
-            arg.results.print_output)
+            arg.results.print_output, arg.results.placement_games)
     matchlog.CloseData()
 
 if __name__ == "__main__":
