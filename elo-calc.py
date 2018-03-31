@@ -41,6 +41,23 @@ class Player:
         else:
             return midPlayerK
 
+    def UpdateELO(self):
+        '''
+        Updates the ELO value for the specified player
+
+        Called in match()
+
+        Parameters
+        ----------
+        player : object of player class
+            The player to update the ELO value for
+        '''
+        self.ELO = elo(self.ELO, self.expected, self.result, self.GetK())
+        if self.ELO > self.ELOHighest:
+            self.ELOHighest = self.ELO
+        elif self.ELO < self.ELOLowest:
+            self.ELOLowest = self.ELO
+
 class InputCSV:
     def __init__(self, pathtofile):
         '''
@@ -203,25 +220,8 @@ def match(challenger, defendant, winner):
     challenger.games += 1
     defendant.games += 1
     # Set new ELO ratings
-    UpdateELO(challenger)
-    UpdateELO(defendant)
-
-def UpdateELO(player):
-    '''
-    Updates the ELO value for the specified player
-
-    Called in match()
-
-    Parameters
-    ----------
-    player : object of player class
-        The player to update the ELO value for
-    '''
-    player.ELO = elo(player.ELO, player.expected, player.result, player.GetK())
-    if player.ELO > player.ELOHighest:
-        player.ELOHighest = player.ELO
-    elif player.ELO < player.ELOLowest:
-        player.ELOLowest = player.ELO
+    challenger.UpdateELO()
+    defendant.UpdateELO()
 
 def GetStats(inputfile, players, column_offset):
     '''
