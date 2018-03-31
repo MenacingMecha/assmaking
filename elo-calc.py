@@ -24,16 +24,21 @@ class Player:
 
         Called in UpdateELO()
 
+        Parameters
+        ----------
+        placement_games : int
+            How many games need to be played with fudged values outputted
+
         Returns
         -------
         int
             The K value to be used when calucating the new ELO value
         '''
-        newPlayerGames = 5
         newPlayerK = 40
         midPlayerK = 20
-        topPlayerELO = 1400
         topPlayerK = 10
+        newPlayerGames = ARGS.placement_games
+        topPlayerELO = 2400
         if self.games > newPlayerGames:
             return newPlayerK
         elif self.ELO > topPlayerELO:
@@ -72,32 +77,6 @@ class InputCSV:
     def CloseData(self):
         ''' Closes the opened input CSV '''
         self.inputFile.close()
-
-class ArgParse:
-    '''Handles command line arguments'''
-    def __init__(self):
-        self.parser = argparse.ArgumentParser(version='2.1')
-        self.results = None
-
-    def parse(self):
-        '''Parses arguments, storing the appropriate values'''
-        self.parser.add_argument('input_file', action='store',
-                help='Input CSV containing details of matches')
-        self.parser.add_argument('-s', '--silent', action='store_true', default=False,
-                dest="silent", help='Silences terminal output')
-        self.parser.add_argument('-o', action='store', dest='output_file',
-                help='Output CSV to write stats to')
-        self.parser.add_argument('-w', action='store', dest='whitelist_file',
-                help='Newline-seperated list of players to check optionally check against')
-        self.parser.add_argument('--print-output', action='store_true', default=False,
-                dest='print_output',
-                help='Print stats to terminal (output is ugly, use for debugging!)')
-        self.parser.add_argument('-x', action='store', dest='offset', type=int,
-                default=0, help='How many columns to offset in the input CSV')
-        self.parser.add_argument('--placement-games', action='store',
-                dest='placement_games', type=int, default=5,
-                help='How many games need to be played with fudged values outputted')
-        self.results = self.parser.parse_args()
 
 def GetPlayers(inputfile, whitelistfile, column_offset):
     '''
@@ -331,14 +310,35 @@ def OutputStats(players, outputfile, silentoutput, printoutput, placement_games)
         if silentoutput == False:
             print("Output stats to " + outputfile)
 
+def argParse():
+    '''Parses arguments, storing the appropriate values'''
+    parser = argparse.ArgumentParser(version='2.1')
+    parser.add_argument('input_file', action='store',
+       help='Input CSV containing details of matches')
+    parser.add_argument('-s', '--silent', action='store_true', default=False,
+       dest="silent", help='Silences terminal output')
+    parser.add_argument('-o', action='store', dest='output_file',
+       help='Output CSV to write stats to')
+    parser.add_argument('-w', action='store', dest='whitelist_file',
+       help='Newline-seperated list of players to check optionally check against')
+    parser.add_argument('--print-output', action='store_true', default=False,
+       dest='print_output',
+       help='Print stats to terminal (output is ugly, use for debugging!)')
+    parser.add_argument('-x', action='store', dest='offset', type=int,
+       default=0, help='How many columns to offset in the input CSV')
+    parser.add_argument('--placement-games', action='store',
+            dest='placement_games', type=int, default=5,
+            help='How many games need to be played with fudged values outputted')
+    return parser.parse_args()
+
 def main():
-    arg = ArgParse()
-    arg.parse()
-    matchlog = InputCSV(arg.results.input_file)
-    players = GetPlayers(matchlog, arg.results.whitelist_file, arg.results.offset)
-    GetStats(matchlog, players, arg.results.offset)
-    OutputStats(players, arg.results.output_file, arg.results.silent,
-            arg.results.print_output, arg.results.placement_games)
+    global ARGS
+    ARGS = argParse()
+    matchlog = InputCSV(ARGS.input_file)
+    players = GetPlayers(matchlog, ARGS.whitelist_file, ARGS.offset)
+    GetStats(matchlog, players, ARGS.offset)
+    OutputStats(players, ARGS.output_file, ARGS.silent,
+            ARGS.print_output, ARGS.placement_games)
     matchlog.CloseData()
 
 if __name__ == "__main__":
