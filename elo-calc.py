@@ -24,11 +24,6 @@ class Player:
 
         Called in UpdateELO()
 
-        Parameters
-        ----------
-        placement_games : int
-            How many games need to be played with fudged values outputted
-
         Returns
         -------
         int
@@ -78,7 +73,7 @@ class InputCSV:
         ''' Closes the opened input CSV '''
         self.inputFile.close()
 
-def GetPlayers(inputfile, whitelistfile, column_offset):
+def GetPlayers(inputfile):
     '''
     Populates the list of players from the input CSV
 
@@ -103,12 +98,13 @@ def GetPlayers(inputfile, whitelistfile, column_offset):
     inputfile.ResetCSV()
     # Loop through the challenger and defendant columns to populate player list
     for row in inputfile.read:
-        challenger = row[0 + column_offset]
-        defendant = row[1 + column_offset]
+        challenger = row[0 + ARGS.column_offset]
+        defendant = row[1 + ARGS.column_offset]
         playernames.add(challenger)
         playernames.add(defendant)
     # Check if we're using a whitelist for players
-    if whitelistfile != None:
+    whitelist_file = ARGS.whitelist_file
+    if whitelist_file != None:
         whitelistSupplied = True
         whitelist = GetWhitelist(whitelistfile)
     else:
@@ -200,7 +196,7 @@ def match(challenger, defendant, winner):
     challenger.UpdateELO()
     defendant.UpdateELO()
 
-def GetStats(inputfile, players, column_offset):
+def GetStats(inputfile, players):
     '''
     Loops through each match that took place in the input CSV, running match() on each one to update the player's stats
 
@@ -211,15 +207,12 @@ def GetStats(inputfile, players, column_offset):
 
     players : list
         List of player objects of the Player class
-
-    column_offset : int
-        How many columns to offset in the input CSV
     '''
     inputfile.ResetCSV()
     for row in inputfile.read:
-        challenger = row[0 + column_offset]
-        defendant = row[1 + column_offset]
-        winner = row[2 + column_offset]
+        challenger = row[0 + ARGS.column_offset]
+        defendant = row[1 + ARGS.column_offset]
+        winner = row[2 + ARGS.column_offset]
         #print([challenger, defendant, winner])
         for i in players:
             if i.name == challenger:
@@ -253,7 +246,7 @@ def WriteCSV(pathtofile, stats):
                 elowriter.writerow(i)
         elofile.flush()  # Write data to file
 
-def OutputStats(players, outputfile, silentoutput, printoutput, placement_games):
+def OutputStats(players):
     '''
     Loops through each player, writing their stats to the output CSV
 
@@ -261,18 +254,6 @@ def OutputStats(players, outputfile, silentoutput, printoutput, placement_games)
     ----------
     players : list
         List of player objects of the Player class
-
-    outputfile : string
-        The path to the input file
-
-    silentoutput : boolean
-        Whether or not to print the output to the terminal
-
-    printoutput : boolean
-        Whether or not to print stats to the terminal
-
-    placement_games : int
-        How many games need to be played with fudged values outputted
     '''
     headerRow = []  # Move headerRow section to own method?
     headerRow.append("Player")
@@ -288,7 +269,7 @@ def OutputStats(players, outputfile, silentoutput, printoutput, placement_games)
     for i in players:
         if i.onWhitelist:  # Only add to output if on the whitelist
             # Fudge ELO value for players with very few games
-            if i.games <= placement_games:
+            if i.games <= ARGS.placement_games:
                 i.ELO = i.games
                 i.ELOHighest = i.games
                 i.ELOLowest = i.games
@@ -302,16 +283,17 @@ def OutputStats(players, outputfile, silentoutput, printoutput, placement_games)
             dataRow.append(i.ELOHighest)
             dataRow.append(i.ELOLowest)
             stats.append(dataRow)
-    if printoutput and silentoutput == False:
+    if ARGS.print_output and ARGS.silent == False:
         for i in stats:
             print(i)
+    outputfile = ARGS.output_file
     if outputfile != None:
         WriteCSV(outputfile, stats)
-        if silentoutput == False:
+        if ARGS.silent == False:
             print("Output stats to " + outputfile)
 
 def argParse():
-    '''Parses arguments, storing the appropriate values'''
+    '''Returns a list of parsed command line arguments'''
     parser = argparse.ArgumentParser(version='2.1')
     parser.add_argument('input_file', action='store',
        help='Input CSV containing details of matches')
@@ -324,7 +306,7 @@ def argParse():
     parser.add_argument('--print-output', action='store_true', default=False,
        dest='print_output',
        help='Print stats to terminal (output is ugly, use for debugging!)')
-    parser.add_argument('-x', action='store', dest='offset', type=int,
+    parser.add_argument('-x', action='store', dest='column_offset', type=int,
        default=0, help='How many columns to offset in the input CSV')
     parser.add_argument('--placement-games', action='store',
             dest='placement_games', type=int, default=5,
@@ -335,10 +317,9 @@ def main():
     global ARGS
     ARGS = argParse()
     matchlog = InputCSV(ARGS.input_file)
-    players = GetPlayers(matchlog, ARGS.whitelist_file, ARGS.offset)
-    GetStats(matchlog, players, ARGS.offset)
-    OutputStats(players, ARGS.output_file, ARGS.silent,
-            ARGS.print_output, ARGS.placement_games)
+    players = GetPlayers(matchlog)
+    GetStats(matchlog, players)
+    OutputStats(players)
     matchlog.CloseData()
 
 if __name__ == "__main__":
