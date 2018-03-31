@@ -18,6 +18,29 @@ class Player:
         self.games = 0
         self.onWhitelist = None
 
+    def GetK(self):
+        '''
+        Calculates the K value to be used for that player
+
+        Called in UpdateELO()
+
+        Returns
+        -------
+        int
+            The K value to be used when calucating the new ELO value
+        '''
+        newPlayerGames = 5
+        newPlayerK = 40
+        midPlayerK = 20
+        topPlayerELO = 1400
+        topPlayerK = 10
+        if self.games > newPlayerGames:
+            return newPlayerK
+        elif self.ELO > topPlayerELO:
+            return topPlayerK
+        else:
+            return midPlayerK
+
 class InputCSV:
     def __init__(self, pathtofile):
         '''
@@ -151,34 +174,6 @@ def CheckWhitelist(name, whitelist):
     else:
         return False
 
-def GetK(player):
-    '''
-    Calculates the K value to be used for that player
-
-    Called in UpdateELO()
-
-    Parameters
-    ----------
-    player : object of player class
-        The player to get the correct K value for
-
-    Returns
-    -------
-    int
-        The K value to be used when calucating the new ELO value
-    '''
-    newPlayerGames = 5
-    newPlayerK = 40
-    midPlayerK = 20
-    topPlayerELO = 1400
-    topPlayerK = 10
-    if player.games > newPlayerGames:
-        return newPlayerK
-    elif player.ELO > topPlayerELO:
-        return topPlayerK
-    else:
-        return midPlayerK
-
 def match(challenger, defendant, winner):
     '''
     Updates the ELO value for the specified player
@@ -222,7 +217,7 @@ def UpdateELO(player):
     player : object of player class
         The player to update the ELO value for
     '''
-    player.ELO = elo(player.ELO, player.expected, player.result, GetK(player))
+    player.ELO = elo(player.ELO, player.expected, player.result, player.GetK())
     if player.ELO > player.ELOHighest:
         player.ELOHighest = player.ELO
     elif player.ELO < player.ELOLowest:
