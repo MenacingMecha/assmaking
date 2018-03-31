@@ -255,6 +255,7 @@ def OutputStats(players):
     players : list
         List of player objects of the Player class
     '''
+    stats = []  # 2d array to store table in
     headerRow = []  # Move headerRow section to own method?
     headerRow.append("Player")
     headerRow.append("Elo")
@@ -262,9 +263,9 @@ def OutputStats(players):
     headerRow.append("Wins")
     headerRow.append("Losses")
     headerRow.append("Winrate")
-    headerRow.append("Highest Elo")
-    headerRow.append("Lowest Elo")
-    stats = []
+    if ARGS.HIGHEST_LOWEST:
+        headerRow.append("Highest Elo")
+        headerRow.append("Lowest Elo")
     stats.append(headerRow)
     for i in players:
         if i.onWhitelist:  # Only add to output if on the whitelist
@@ -280,8 +281,9 @@ def OutputStats(players):
             dataRow.append(i.wins)
             dataRow.append(i.losses)
             dataRow.append(float(i.wins)/float(i.games))  # winrate
-            dataRow.append(i.ELOHighest)
-            dataRow.append(i.ELOLowest)
+            if ARGS.HIGHEST_LOWEST:
+                dataRow.append(i.ELOHighest)
+                dataRow.append(i.ELOLowest)
             stats.append(dataRow)
     if ARGS.print_output and ARGS.silent == False:
         for i in stats:
@@ -296,21 +298,23 @@ def argParse():
     '''Returns a list of parsed command line arguments'''
     parser = argparse.ArgumentParser(version='2.1')
     parser.add_argument('input_file', action='store',
-       help='Input CSV containing details of matches')
+            help='Input CSV containing details of matches')
     parser.add_argument('-s', '--silent', action='store_true', default=False,
-       dest="silent", help='Silences terminal output')
+            dest="silent", help='Silences terminal output')
     parser.add_argument('-o', action='store', dest='output_file',
-       help='Output CSV to write stats to')
+            help='Output CSV to write stats to')
     parser.add_argument('-w', action='store', dest='whitelist_file',
-       help='Newline-seperated list of players to check optionally check against')
+            help='Newline-seperated list of players to check optionally check against')
     parser.add_argument('--print-output', action='store_true', default=False,
-       dest='print_output',
-       help='Print stats to terminal (output is ugly, use for debugging!)')
+            dest='print_output',
+            help='Print stats to terminal (output is ugly, use for debugging!)')
     parser.add_argument('-x', action='store', dest='column_offset', type=int,
-       default=0, help='How many columns to offset in the input CSV')
+            default=0, help='How many columns to offset in the input CSV')
     parser.add_argument('--placement-games', action='store',
             dest='placement_games', type=int, default=5,
             help='How many games need to be played with fudged values outputted')
+    parser.add_argument('--highest-lowest', action='store_true', default=False,
+            dest='HIGHEST_LOWEST', help="Include player's highest and lowest Elo values")
     return parser.parse_args()
 
 def main():
