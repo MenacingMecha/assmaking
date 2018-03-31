@@ -46,11 +46,6 @@ class Player:
         Updates the ELO value for the specified player
 
         Called in match()
-
-        Parameters
-        ----------
-        player : object of player class
-            The player to update the ELO value for
         '''
         self.ELO = elo(self.ELO, self.expected, self.result, self.GetK())
         if self.ELO > self.ELOHighest:
