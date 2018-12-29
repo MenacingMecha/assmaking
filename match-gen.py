@@ -78,6 +78,13 @@ def get_players_to_match(present_players, all_players):
                 players_to_match.append(ap)
                 present_players.remove(pp)
                 break  # player has been found, break loop early
+    # add any remaining register entries as new members
+    if len(present_players) > 0:
+        for p in present_players:
+            player_position = len(players_to_match) + 1
+            player_name = p
+            player = [player_position, player_name]
+            players_to_match.append(player)
     #players_to_match.reverse()  # does this need to be reversed or not?
     return players_to_match
 
@@ -86,12 +93,11 @@ def generate_matches(players_to_match):
     total_players = len(players_to_match)
     odd_number_of_players = total_players % 2 != 0
     while len(players_to_match) > 0:
-        print(len(players_to_match))
+        #print(len(players_to_match))
         # if there's an odd number of players, the first player is given another match
         second_run = len(players_to_match) == total_players - 2
-        print(second_run)
+        #print(second_run)
         if second_run and odd_number_of_players:
-            print("LETS GOOO")
             player_a = matches[0][0]
         else:
             # take the player at the bottom of the list
@@ -112,12 +118,7 @@ def main():
     player_data_file.close_data()
     players_present = get_players_present(ARGS.register_file)
     players_to_match = get_players_to_match(players_present, players_total)
-    for p in players_to_match:
-        print(p)
     matches = generate_matches(players_to_match)
-    print(len(matches))
-    for p in matches:
-        print(p)
 
 if __name__ == "__main__":
     main()
