@@ -1,6 +1,6 @@
-# elo-calc
+# ASSmaking
 
-Python script for calculating ELO and other player stats from a csv detailing all matches that took place.
+Matchmaking system for Abertay Smash Society.
 
 ## Getting Started
 
