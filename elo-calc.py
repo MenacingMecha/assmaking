@@ -296,7 +296,7 @@ def OutputStats(players):
 
 def argParse():
     '''Returns a list of parsed command line arguments'''
-    parser = argparse.ArgumentParser(version='2.1')
+    parser = argparse.ArgumentParser()
     parser.add_argument('input_file', action='store',
             help='Input CSV containing details of matches')
     parser.add_argument('-s', '--silent', action='store_true', default=False,

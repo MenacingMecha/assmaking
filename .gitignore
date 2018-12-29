@@ -63,3 +63,4 @@ docs/_build/
 # PROJECT SPECIFIC
 # ----------------
 *.csv
+*.txt
