@@ -2,6 +2,7 @@ from trueskill import *
 import csv
 import sys
 import argparse
+from datetime import date
 
 class InputCSV:
     def __init__(self, pathtofile):
@@ -62,11 +63,6 @@ def argParse():
             help='Line-seperated list of present players')
     parser.add_argument('-s', '--silent', action='store_true', default=False,
             dest="silent", help='Silences terminal output')
-    parser.add_argument('-o', action='store', dest='output_file',
-            help='Output CSV to write matches to')
-    parser.add_argument('--print-output', action='store_true', default=False,
-            dest='print_output',
-            help='Print stats to terminal (output is ugly, use for debugging!)')
     return parser.parse_args()
 
 def get_players_to_match(present_players, all_players):
@@ -93,7 +89,6 @@ def generate_matches(players_to_match):
     total_players = len(players_to_match)
     odd_number_of_players = total_players % 2 != 0
     while len(players_to_match) > 0:
-        #print(len(players_to_match))
         # if there's an odd number of players, the first player is given another match
         second_run = len(players_to_match) == total_players - 2
         #print(second_run)
@@ -106,12 +101,24 @@ def generate_matches(players_to_match):
         player_b = players_to_match[-1]  # TODO: change this to match randomly
         players_to_match.remove(player_b)
         match = [player_a, player_b]
-        print(match)
         matches.append(match)
     return matches
 
+def write_matchlog(matches, silenced):
+    current_date = str(date.today())
+    filename = 'matchlog_' + current_date + '.csv'
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quotechar="'")
+        title_row = ['No.', '#', 'Player A', '', '#', 'Player B', 'Winner']
+        writer.writerow(title_row)
+        match_number = 0
+        for m in matches:
+            match_number += 1
+            writer.writerow([match_number, m[0][0], m[0][1], 'vs', m[1][0], m[1][1], ''])
+    if not silenced:
+        print("Successfully wrote matches to '" + filename + "'")
+
 def main():
-    global ARGS
     ARGS = argParse()
     player_data_file = InputCSV(ARGS.playerdata_file) # TODO: rename this method call
     players_total = player_data_file.get_names()
@@ -119,6 +126,7 @@ def main():
     players_present = get_players_present(ARGS.register_file)
     players_to_match = get_players_to_match(players_present, players_total)
     matches = generate_matches(players_to_match)
+    write_matchlog(matches, ARGS.silent)
 
 if __name__ == "__main__":
     main()
