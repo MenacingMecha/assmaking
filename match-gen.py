@@ -76,12 +76,14 @@ def get_players_to_match(present_players, all_players):
                 break  # player has been found, break loop early
     # add any remaining register entries as new members
     if len(present_players) > 0:
+        number_of_total_players = len(all_players)
+        index_count = 0
         for p in present_players:
-            player_position = len(players_to_match) + 1
+            index_count += 1
+            player_position = number_of_total_players + index_count
             player_name = p
             player = [player_position, player_name]
             players_to_match.append(player)
-    #players_to_match.reverse()  # does this need to be reversed or not?
     return players_to_match
 
 def generate_matches(players_to_match):
