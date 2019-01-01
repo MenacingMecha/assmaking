@@ -3,6 +3,7 @@ import csv
 import sys
 import argparse
 from datetime import date
+import random
 
 class InputCSV:
     def __init__(self, pathtofile):
@@ -63,6 +64,9 @@ def argParse():
             help='Line-seperated list of present players')
     parser.add_argument('-s', '--silent', action='store_true', default=False,
             dest="silent", help='Silences terminal output')
+    parser.add_argument('--max-rank-difference', type=int, default=3,
+            dest="max_rank_difference",
+            help='Max rank difference between players when generating matches')
     return parser.parse_args()
 
 def get_players_to_match(present_players, all_players):
@@ -86,25 +90,30 @@ def get_players_to_match(present_players, all_players):
             players_to_match.append(player)
     return players_to_match
 
-def generate_matches(players_to_match):
+def generate_matches(players_to_match, max_rank_difference):
+    random.seed()
     matches = []
     total_players = len(players_to_match)
     odd_number_of_players = total_players % 2 != 0
     while len(players_to_match) > 0:
         # if there's an odd number of players, the first player is given another match
         second_run = len(players_to_match) == total_players - 2
-        #print(second_run)
         if second_run and odd_number_of_players:
             player_a = matches[0][0]
         else:
             # take the player at the bottom of the list
             player_a = players_to_match[-1]
             players_to_match.remove(player_a)
-        player_b = players_to_match[-1]  # TODO: change this to match randomly
+        random_b_index = -1 * random.randint(1, max_rank_difference)
+        random_b_index = clamp(random_b_index, len(players_to_match) * -1, -1)
+        player_b = players_to_match[random_b_index]
         players_to_match.remove(player_b)
         match = [player_a, player_b]
         matches.append(match)
     return matches
+
+def clamp(n, min_n, max_n):
+    return max(min_n, min(n, max_n))
 
 def write_matchlog(matches, silenced):
     current_date = str(date.today())
@@ -127,7 +136,7 @@ def main():
     player_data_file.close_data()
     players_present = get_players_present(ARGS.register_file)
     players_to_match = get_players_to_match(players_present, players_total)
-    matches = generate_matches(players_to_match)
+    matches = generate_matches(players_to_match, ARGS.max_rank_difference)
     write_matchlog(matches, ARGS.silent)
 
 if __name__ == "__main__":
