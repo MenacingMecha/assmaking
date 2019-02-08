@@ -3,6 +3,7 @@ from elo import elo
 import csv
 import sys
 import argparse
+from operator import attrgetter
 
 class Player:
     ''' Stores the stat values for each player '''
@@ -98,8 +99,8 @@ def GetPlayers(inputfile):
     inputfile.ResetCSV()
     # Loop through the challenger and defendant columns to populate player list
     for row in inputfile.read:
-        challenger = row[0 + ARGS.column_offset]
-        defendant = row[1 + ARGS.column_offset]
+        challenger = row[2 + ARGS.column_offset]
+        defendant = row[5 + ARGS.column_offset]
         playernames.add(challenger)
         playernames.add(defendant)
     # Check if we're using a whitelist for players
@@ -210,9 +211,9 @@ def GetStats(inputfile, players):
     '''
     inputfile.ResetCSV()
     for row in inputfile.read:
-        challenger = row[0 + ARGS.column_offset]
-        defendant = row[1 + ARGS.column_offset]
-        winner = row[2 + ARGS.column_offset]
+        challenger = row[2 + ARGS.column_offset]
+        defendant = row[5 + ARGS.column_offset]
+        winner = row[6 + ARGS.column_offset]
         #print([challenger, defendant, winner])
         for i in players:
             if i.name == challenger:
@@ -224,8 +225,8 @@ def GetStats(inputfile, players):
         #print([isinstance(challenger, Player), isinstance(defendant, Player), isinstance(winner, Player)])
         #print([challenger.name, defendant.name, winner.name])
         #print([challenger.ELO, defendant.ELO, winner.ELO])
-        if challenger.onWhitelist and defendant.onWhitelist:
-            match(challenger, defendant, winner)
+        #if challenger.onWhitelist and defendant.onWhitelist:
+        match(challenger, defendant, winner)
 
 def WriteCSV(pathtofile, stats):
     '''
@@ -257,6 +258,7 @@ def OutputStats(players):
     '''
     stats = []  # 2d array to store table in
     headerRow = []  # Move headerRow section to own method?
+    headerRow.append("Position")
     headerRow.append("Player")
     headerRow.append("Elo")
     headerRow.append("Games")
@@ -267,6 +269,7 @@ def OutputStats(players):
         headerRow.append("Highest Elo")
         headerRow.append("Lowest Elo")
     stats.append(headerRow)
+    position_counter = 0
     for i in players:
         if i.onWhitelist:  # Only add to output if on the whitelist
             # Fudge ELO value for players with very few games
@@ -275,6 +278,8 @@ def OutputStats(players):
                 i.ELOHighest = i.games
                 i.ELOLowest = i.games
             dataRow = []  # Move this to it's own section?
+            position_counter += 1
+            dataRow.append(position_counter)
             dataRow.append(i.name)
             dataRow.append(i.ELO)
             dataRow.append(i.games)
@@ -293,6 +298,11 @@ def OutputStats(players):
         WriteCSV(outputfile, stats)
         if ARGS.silent == False:
             print("Output stats to " + outputfile)
+
+def SortPointPosition(_players):
+    #sorted(_players, key=lambda player: player.ELO)  # sort by points
+    _players = sorted(_players, key=attrgetter('ELO'), reverse=True)
+    return _players
 
 def argParse():
     '''Returns a list of parsed command line arguments'''
@@ -323,6 +333,7 @@ def main():
     matchlog = InputCSV(ARGS.input_file)
     players = GetPlayers(matchlog)
     GetStats(matchlog, players)
+    players = SortPointPosition(players)
     OutputStats(players)
     matchlog.CloseData()
 
